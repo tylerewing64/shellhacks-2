@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, X } from 'lucide-react';
+import { Search, X, Heart } from 'lucide-react';
 import OrganizationService from '../services/organizationService';
+import { useLikedOrganizations } from '../contexts/LikedOrganizationsContext';
+import OrganizationDetailCard from './OrganizationDetailCard';
 
-const NavbarSearch = ({ onSelectOrganization }) => {
+const NavbarSearch = ({ onSelectOrganization, onDonationSuccess }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [selectedOrganization, setSelectedOrganization] = useState(null);
+  const { isLiked, toggleLike } = useLikedOrganizations();
 
   // Debounced search function
   const debouncedSearch = useCallback(
@@ -46,13 +50,24 @@ const NavbarSearch = ({ onSelectOrganization }) => {
     debouncedSearch(value);
   };
 
-  // Handle organization selection
+  // Handle organization selection - show detail card
   const handleSelectOrganization = (organization) => {
-    onSelectOrganization(organization);
+    setSelectedOrganization(organization);
     setQuery('');
     setResults([]);
     setShowResults(false);
     setIsExpanded(false);
+  };
+
+  // Handle closing detail card
+  const handleCloseDetail = () => {
+    setSelectedOrganization(null);
+  };
+
+  // Handle like toggle
+  const handleToggleLike = (e, organization) => {
+    e.stopPropagation(); // Prevent organization selection when clicking like button
+    toggleLike(organization);
   };
 
   // Handle input focus
@@ -79,7 +94,8 @@ const NavbarSearch = ({ onSelectOrganization }) => {
   };
 
   return (
-    <div className="relative">
+    <>
+      <div className="relative">
       {/* Search Input */}
       <div className={`relative transition-all duration-200 ${
         isExpanded ? 'w-80' : 'w-64'
@@ -140,6 +156,21 @@ const NavbarSearch = ({ onSelectOrganization }) => {
                       {organization.description}
                     </p>
                   </div>
+                  <button
+                    onClick={(e) => handleToggleLike(e, organization)}
+                    className={`p-1 rounded-full transition-colors ${
+                      isLiked(organization.ein)
+                        ? 'text-red-500 hover:text-red-600'
+                        : 'text-gray-400 hover:text-red-500'
+                    }`}
+                    title={isLiked(organization.ein) ? 'Remove from favorites' : 'Add to favorites'}
+                  >
+                    <Heart
+                      className={`w-4 h-4 ${
+                        isLiked(organization.ein) ? 'fill-current' : ''
+                      }`}
+                    />
+                  </button>
                 </div>
               </div>
             ))}
@@ -155,7 +186,20 @@ const NavbarSearch = ({ onSelectOrganization }) => {
           </div>
         </div>
       )}
-    </div>
+      </div>
+
+      {/* Organization Detail Card */}
+      {selectedOrganization && (
+        <OrganizationDetailCard
+          organization={selectedOrganization}
+          onClose={handleCloseDetail}
+          onLike={toggleLike}
+          onUnlike={(ein) => toggleLike({ ein })}
+          isLiked={isLiked(selectedOrganization.ein)}
+          onDonationSuccess={onDonationSuccess}
+        />
+      )}
+    </>
   );
 };
 

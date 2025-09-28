@@ -1,44 +1,60 @@
 // src/Dashboard.jsx
 import { useState } from "react";
-import Sidebar from "./components/Sidebar";
-import { Header } from "./components/Header";
 import { ImpactOverview } from "./components/ImpactOverview";
 import { RecentActivity } from "./components/RecentActivity";
 
-export default function Dashboard() {
-  // ✨ NEW: sidebar state lives here
+export default function Dashboard({ onSelectOrganization, onDonationSuccess }) {
+  const [selectedOrganizations, setSelectedOrganizations] = useState([]);
 
-  // Header menu handler
-  function handleMenuClick(action) {
-    if (action === "toggle") setCollapsed((s) => !s); // collapse / expand
-    if (action === "mobile") setMobileOpen(true); // open mobile sidebar
+  // Handle organization selection from search
+  function handleSelectOrganizationInternal(organization) {
+    // Check if organization is already selected
+    const isAlreadySelected = selectedOrganizations.some(
+      (org) => org.ein === organization.ein
+    );
+
+    if (!isAlreadySelected) {
+      setSelectedOrganizations((prev) => [...prev, organization]);
+      // You could show a toast notification here
+      console.log("Organization added:", organization.name);
+    }
+
+    // Call parent handler if provided
+    if (onSelectOrganization) {
+      onSelectOrganization(organization);
+    }
+  }
+
+  // Handle donation success
+  function handleDonationSuccessInternal(donation) {
+    console.log("Donation successful:", donation);
+    // You could show a toast notification here or update state
+
+    // Call parent handler if provided
+    if (onDonationSuccess) {
+      onDonationSuccess(donation);
+    }
   }
 
   return (
-    <div className="flex-1 min-h-screen">
-      {/* Wire props into Header */}
+    <div className="space-y-8">
+      <div className="text-center space-y-2">
+        <h2 className="text-3xl font-bold">Your Impact Dashboard</h2>
+        <p className="text-muted-foreground">
+          See how your everyday purchases are making a difference in the
+          world
+        </p>
+      </div>
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="space-y-8">
-          <div className="text-center space-y-2">
-            <h2 className="text-3xl font-bold">Your Impact Dashboard</h2>
-            <p className="text-muted-foreground">
-              See how your everyday purchases are making a difference in the
-              world
-            </p>
-          </div>
+      <section>
+        <ImpactOverview />
+      </section>
 
-          <section>
-            <ImpactOverview />
-          </section>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-8">
-              <RecentActivity />
-            </div>
-          </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-8">
+          <RecentActivity />
         </div>
-      </main>
+      </div>
     </div>
   );
 }

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import { Header } from "./components/Header";
 
-function PageContainer({ children }) {
+function PageContainer({ children, onSelectOrganization, onDonationSuccess }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false); // mobile drawer
 
@@ -29,7 +29,12 @@ function PageContainer({ children }) {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Sticky Header */}
         <div className="sticky top-0 z-10 bg-white shadow">
-          <Header onMenuClick={handleMenuClick} isCollapsed={collapsed} />
+          <Header 
+            onMenuClick={handleMenuClick} 
+            isCollapsed={collapsed}
+            onSelectOrganization={onSelectOrganization}
+            onDonationSuccess={onDonationSuccess}
+          />
         </div>
 
         {/* Scrollable content */}

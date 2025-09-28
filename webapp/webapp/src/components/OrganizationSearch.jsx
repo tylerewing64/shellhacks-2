@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import OrganizationService from '../services/organizationService';
+import { useLikedOrganizations } from '../contexts/LikedOrganizationsContext';
+import OrganizationDetailCard from './OrganizationDetailCard';
+import { Heart } from 'lucide-react';
 
-const OrganizationSearch = ({ onSelectOrganization, onClose }) => {
+const OrganizationSearch = ({ onSelectOrganization, onClose, onDonationSuccess }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -9,6 +12,8 @@ const OrganizationSearch = ({ onSelectOrganization, onClose }) => {
   const [causes, setCauses] = useState([]);
   const [selectedCause, setSelectedCause] = useState('');
   const [showResults, setShowResults] = useState(false);
+  const [selectedOrganization, setSelectedOrganization] = useState(null);
+  const { isLiked, toggleLike } = useLikedOrganizations();
 
   // Load causes on component mount
   useEffect(() => {
@@ -65,13 +70,20 @@ const OrganizationSearch = ({ onSelectOrganization, onClose }) => {
     }
   };
 
-  // Handle organization selection
+  // Handle organization selection - show detail card
   const handleSelectOrganization = (organization) => {
-    onSelectOrganization(organization);
-    setQuery('');
-    setResults([]);
-    setShowResults(false);
-    if (onClose) onClose();
+    setSelectedOrganization(organization);
+  };
+
+  // Handle closing detail card
+  const handleCloseDetail = () => {
+    setSelectedOrganization(null);
+  };
+
+  // Handle like toggle
+  const handleToggleLike = (e, organization) => {
+    e.stopPropagation(); // Prevent organization selection when clicking like button
+    toggleLike(organization);
   };
 
   // Load available causes
@@ -87,7 +99,8 @@ const OrganizationSearch = ({ onSelectOrganization, onClose }) => {
   };
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto">
+    <>
+      <div className="relative w-full max-w-2xl mx-auto">
       {/* Search Input */}
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -178,12 +191,33 @@ const OrganizationSearch = ({ onSelectOrganization, onClose }) => {
                         {organization.description}
                       </p>
                       {organization.websiteUrl && (
-                        <p className="text-xs text-blue-600 truncate">
+                        <a
+                          href={organization.websiteUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-xs text-blue-600 hover:text-blue-800 truncate block"
+                        >
                           {organization.websiteUrl}
-                        </p>
+                        </a>
                       )}
                     </div>
-                    <div className="flex-shrink-0">
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={(e) => handleToggleLike(e, organization)}
+                        className={`p-1 rounded-full transition-colors ${
+                          isLiked(organization.ein)
+                            ? 'text-red-500 hover:text-red-600'
+                            : 'text-gray-400 hover:text-red-500'
+                        }`}
+                        title={isLiked(organization.ein) ? 'Remove from favorites' : 'Add to favorites'}
+                      >
+                        <Heart
+                          className={`w-5 h-5 ${
+                            isLiked(organization.ein) ? 'fill-current' : ''
+                          }`}
+                        />
+                      </button>
                       <svg
                         className="w-5 h-5 text-gray-400"
                         fill="none"
@@ -213,7 +247,20 @@ const OrganizationSearch = ({ onSelectOrganization, onClose }) => {
           onClick={() => setShowResults(false)}
         />
       )}
-    </div>
+      </div>
+
+      {/* Organization Detail Card */}
+      {selectedOrganization && (
+        <OrganizationDetailCard
+          organization={selectedOrganization}
+          onClose={handleCloseDetail}
+          onLike={toggleLike}
+          onUnlike={(ein) => toggleLike({ ein })}
+          isLiked={isLiked(selectedOrganization.ein)}
+          onDonationSuccess={onDonationSuccess}
+        />
+      )}
+    </>
   );
 };
 

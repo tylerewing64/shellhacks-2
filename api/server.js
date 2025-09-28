@@ -21,6 +21,9 @@ app.use('/api', routes); // Mount health endpoint at /api/health
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/user', require('./routes/users'));
 app.use('/api/organizations', require('./routes/organizations'));
+app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/user-organizations', require('./routes/userOrganizations'));
+app.use('/api/donations', require('./routes/donations'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
