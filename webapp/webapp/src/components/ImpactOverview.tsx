@@ -21,36 +21,36 @@ const monthlyDonations = [
 
 export function ImpactOverview() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Key Impact Metrics */}
-      <div className="grid grid-cols-2 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Total Donated</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">$247.82</div>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      {/* Metrics Card */}
+      <Card className="flex flex-col gap-4">
+        <CardHeader>
+          <CardTitle>Key Metrics</CardTitle>
+        </CardHeader>
+        <CardContent className="p-2 space-y-4">
+          {/* Total Donated */}
+          <div className="p-2 border border-border/50 rounded-lg text-center">
+            <div className="text-sm text-muted-foreground">Total Donated</div>
+            <div className="text-xl font-bold">$247.82</div>
             <p className="text-xs text-muted-foreground">+$23.45 this month</p>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground">Round-ups This Month</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">43</div>
+          {/* Round-ups This Month */}
+          <div className="p-2 border border-border/50 rounded-lg text-center">
+            <div className="text-sm text-muted-foreground">Round-ups This Month</div>
+            <div className="text-xl font-bold">43</div>
             <p className="text-xs text-muted-foreground">Avg: $0.54 per transaction</p>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Donation Breakdown Chart */}
-      <Card>
+      {/* Donation Allocation Chart */}
+      <Card className="lg:col-span-2">
         <CardHeader>
           <CardTitle>Donation Allocation</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
@@ -69,7 +69,9 @@ export function ImpactOverview() {
               <Tooltip formatter={(value) => [`${value}%`, 'Allocation']} />
             </PieChart>
           </ResponsiveContainer>
-          <div className="grid grid-cols-2 gap-2 mt-4">
+
+          {/* Legend */}
+          <div className="grid grid-cols-2 gap-2">
             {impactData.map((item) => (
               <div key={item.name} className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
@@ -81,11 +83,11 @@ export function ImpactOverview() {
       </Card>
 
       {/* Monthly Donations Table */}
-      <Card className="lg:col-span-2">
+      <Card className="lg:col-span-3">
         <CardHeader>
           <CardTitle>Monthly Donations (Last 6 Months)</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <Table>
             <TableHeader>
               <TableRow>
@@ -106,6 +108,7 @@ export function ImpactOverview() {
           </Table>
         </CardContent>
       </Card>
+
     </div>
   );
 }

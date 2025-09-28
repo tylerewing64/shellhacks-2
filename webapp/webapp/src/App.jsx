@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./Login.jsx";
 import Dashboard from "./Dashboard.jsx";
+import OrganizationSearchPage from "./pages/OrganizationSearchPage.jsx";
 import "./App.css";
 import PageContainer from "./pageContainer.js";
 

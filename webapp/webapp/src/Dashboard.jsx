@@ -4,14 +4,15 @@ import Sidebar from "./components/Sidebar";
 import { Header } from "./components/Header";
 import { ImpactOverview } from "./components/ImpactOverview";
 import { RecentActivity } from "./components/RecentActivity";
-import { CharityUpdates } from "./components/CharityUpdates";
-import { GoalsProgress } from "./components/GoalsProgress";
-import { CharitySuggestions } from "./components/CharitySuggestions";
 
 export default function Dashboard() {
   // ✨ NEW: sidebar state lives here
+  // Sidebar state
+  const [collapsed, setCollapsed] = useState(false); // desktop collapse
+  const [mobileOpen, setMobileOpen] = useState(false); // mobile drawer
+  const [selectedOrganizations, setSelectedOrganizations] = useState([]);
 
-  // Header will call this
+  // Header menu handler
   function handleMenuClick(action) {
     if (action === "toggle") setCollapsed((s) => !s); // collapse / expand
     if (action === "mobile") setMobileOpen(true); // open mobile sidebar
