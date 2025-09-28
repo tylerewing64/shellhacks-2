@@ -1,4 +1,5 @@
 const db = require('./DatabaseService');
+const EveryOrgService = require('./EveryOrgService');
 
 class OrganizationService {
   static async getAllOrganizations(filters = {}) {
@@ -147,6 +148,87 @@ class OrganizationService {
       { value: 'environment', label: 'Environment' },
       { value: 'other', label: 'Other' }
     ];
+  }
+
+  // Every.org API integration methods
+  
+  static async searchEveryOrgNonprofits(searchTerm, options = {}) {
+    try {
+      return await EveryOrgService.searchNonprofits(searchTerm, options);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async browseEveryOrgNonprofits(cause, options = {}) {
+    try {
+      return await EveryOrgService.browseNonprofits(cause, options);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getEveryOrgNonprofit(identifier) {
+    try {
+      return await EveryOrgService.getNonprofitByIdentifier(identifier);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static getEveryOrgCauses() {
+    return EveryOrgService.getAvailableCauses().map(cause => ({
+      value: cause,
+      label: cause.charAt(0).toUpperCase() + cause.slice(1)
+    }));
+  }
+
+  // Sync Every.org nonprofit to local database
+  static async syncNonprofitFromEveryOrg(everyOrgData) {
+    try {
+      // Check if nonprofit already exists
+      const [existing] = await db.execute(
+        'SELECT id FROM organizations WHERE ein = ? OR name = ?',
+        [everyOrgData.ein, everyOrgData.name]
+      );
+
+      if (existing.length > 0) {
+        return existing[0].id;
+      }
+
+      // Map Every.org data to our database schema
+      const category = this.mapEveryOrgCategory(everyOrgData.tags);
+      
+      const [result] = await db.execute(
+        'INSERT INTO organizations (name, description, category, ein, website, logo_url, verified) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [
+          everyOrgData.name,
+          everyOrgData.description,
+          category,
+          everyOrgData.ein,
+          everyOrgData.websiteUrl,
+          everyOrgData.logoUrl,
+          true // Every.org nonprofits are verified
+        ]
+      );
+
+      return result.insertId;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static mapEveryOrgCategory(tags) {
+    if (!tags || tags.length === 0) return 'other';
+    
+    const tagNames = tags.map(tag => tag.name || tag).map(name => name.toLowerCase());
+    
+    if (tagNames.includes('education')) return 'education';
+    if (tagNames.includes('health') || tagNames.includes('healthcare')) return 'healthcare';
+    if (tagNames.includes('environment')) return 'environment';
+    if (tagNames.includes('animals') || tagNames.includes('humans') || tagNames.includes('community')) return 'community';
+    
+    return 'other';
   }
 }
 

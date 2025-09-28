@@ -127,6 +127,120 @@ class OrganizationController {
       return ApiResponse.error(res, 'Internal server error', 500);
     }
   }
+
+  // Every.org API endpoints
+  
+  static async searchEveryOrg(req, res) {
+    try {
+      const { q, limit, causes } = req.query;
+      
+      if (!q) {
+        return ApiResponse.error(res, 'Search term (q) is required', 400);
+      }
+      
+      const options = {
+        limit: parseInt(limit) || 20,
+        causes: causes
+      };
+      
+      const result = await OrganizationService.searchEveryOrgNonprofits(q, options);
+      
+      return ApiResponse.success(res, {
+        nonprofits: result.nonprofits,
+        total: result.total
+      });
+      
+    } catch (error) {
+      console.error('Search Every.org error:', error);
+      return ApiResponse.error(res, 'Failed to search nonprofits', 500);
+    }
+  }
+
+  static async browseEveryOrg(req, res) {
+    try {
+      const { cause, limit, page } = req.query;
+      
+      if (!cause) {
+        return ApiResponse.error(res, 'Cause is required', 400);
+      }
+      
+      const options = {
+        limit: parseInt(limit) || 20,
+        page: parseInt(page) || 1
+      };
+      
+      const result = await OrganizationService.browseEveryOrgNonprofits(cause, options);
+      
+      return ApiResponse.success(res, {
+        nonprofits: result.nonprofits,
+        pagination: result.pagination
+      });
+      
+    } catch (error) {
+      console.error('Browse Every.org error:', error);
+      return ApiResponse.error(res, 'Failed to browse nonprofits', 500);
+    }
+  }
+
+  static async getEveryOrgNonprofit(req, res) {
+    try {
+      const { identifier } = req.params;
+      
+      if (!identifier) {
+        return ApiResponse.error(res, 'Nonprofit identifier is required', 400);
+      }
+      
+      const nonprofit = await OrganizationService.getEveryOrgNonprofit(identifier);
+      
+      return ApiResponse.success(res, {
+        nonprofit
+      });
+      
+    } catch (error) {
+      console.error('Get Every.org nonprofit error:', error);
+      return ApiResponse.error(res, 'Failed to get nonprofit details', 500);
+    }
+  }
+
+  static async getEveryOrgCauses(req, res) {
+    try {
+      const causes = OrganizationService.getEveryOrgCauses();
+      
+      return ApiResponse.success(res, {
+        causes
+      });
+      
+    } catch (error) {
+      console.error('Get Every.org causes error:', error);
+      return ApiResponse.error(res, 'Internal server error', 500);
+    }
+  }
+
+  static async syncNonprofit(req, res) {
+    try {
+      const { identifier } = req.params;
+      
+      if (!identifier) {
+        return ApiResponse.error(res, 'Nonprofit identifier is required', 400);
+      }
+      
+      // Get nonprofit details from Every.org
+      const everyOrgData = await OrganizationService.getEveryOrgNonprofit(identifier);
+      
+      // Sync to local database
+      const localId = await OrganizationService.syncNonprofitFromEveryOrg(everyOrgData);
+      
+      return ApiResponse.success(res, {
+        message: 'Nonprofit synced successfully',
+        localId,
+        everyOrgData
+      });
+      
+    } catch (error) {
+      console.error('Sync nonprofit error:', error);
+      return ApiResponse.error(res, 'Failed to sync nonprofit', 500);
+    }
+  }
 }
 
 module.exports = OrganizationController;
