@@ -7,7 +7,8 @@ function PageContainer({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false); // mobile drawer
 
   function handleMenuClick(action) {
-    if (action === "mobile") setMobileOpen(true);
+    if (action === "toggle") setCollapsed((s) => !s); // collapse / expand
+    if (action === "mobile") setMobileOpen(true); // open mobile sidebar
   }
 
   return (

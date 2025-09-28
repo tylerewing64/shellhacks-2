@@ -10,8 +10,6 @@ import { CharitySuggestions } from "./components/CharitySuggestions";
 
 export default function Dashboard() {
   // ✨ NEW: sidebar state lives here
-  const [collapsed, setCollapsed] = useState(false); // desktop collapse
-  const [mobileOpen, setMobileOpen] = useState(false); // mobile drawer
 
   // Header will call this
   function handleMenuClick(action) {
