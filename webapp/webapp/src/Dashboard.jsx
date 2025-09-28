@@ -7,10 +7,6 @@ import { RecentActivity } from "./components/RecentActivity";
 
 export default function Dashboard() {
   // ✨ NEW: sidebar state lives here
-  // Sidebar state
-  const [collapsed, setCollapsed] = useState(false); // desktop collapse
-  const [mobileOpen, setMobileOpen] = useState(false); // mobile drawer
-  const [selectedOrganizations, setSelectedOrganizations] = useState([]);
 
   // Header menu handler
   function handleMenuClick(action) {
@@ -39,12 +35,6 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
               <RecentActivity />
-              <CharityUpdates />
-            </div>
-
-            <div className="space-y-8">
-              <GoalsProgress />
-              <CharitySuggestions />
             </div>
           </div>
         </div>
