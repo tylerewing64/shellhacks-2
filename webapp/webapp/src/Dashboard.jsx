@@ -1,4 +1,6 @@
 // src/Dashboard.jsx
+import { useState } from "react";
+import Sidebar from "./components/Sidebar";
 import { Header } from "./components/Header";
 import { ImpactOverview } from "./components/ImpactOverview";
 import { RecentActivity } from "./components/RecentActivity";
@@ -7,41 +9,60 @@ import { GoalsProgress } from "./components/GoalsProgress";
 import { CharitySuggestions } from "./components/CharitySuggestions";
 
 export default function Dashboard() {
+  // ✨ NEW: sidebar state lives here
+  const [collapsed, setCollapsed] = useState(false); // desktop collapse
+  const [mobileOpen, setMobileOpen] = useState(false); // mobile drawer
+
+  // Header will call this
+  function handleMenuClick(action) {
+    if (action === "toggle") setCollapsed((s) => !s); // collapse / expand
+    if (action === "mobile") setMobileOpen(true);      // open mobile sidebar
+  }
+
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* LEFT: Sidebar */}
+      <Sidebar
+        collapsed={collapsed}
+        mobileOpen={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        appName="YourRightPocket"
+        userName="Jane Doe"
+        userEmail="jane@example.com"
+      />
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="space-y-8">
-          {/* Welcome Section */}
-          <div className="text-center space-y-2">
-            <h2 className="text-3xl font-bold">Your Impact Dashboard</h2>
-            <p className="text-muted-foreground">
-              See how your everyday purchases are making a difference in the world
-            </p>
-          </div>
+      {/* RIGHT: Content */}
+      <div className="flex-1 min-h-screen">
+        {/* Wire props into Header */}
+        <Header onMenuClick={handleMenuClick} isCollapsed={collapsed} />
 
-          {/* Impact Overview */}
-          <section>
-            <ImpactOverview />
-          </section>
-
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column */}
-            <div className="lg:col-span-2 space-y-8">
-              <RecentActivity />
-              <CharityUpdates />
+        <main className="container mx-auto px-4 py-8">
+          <div className="space-y-8">
+            <div className="text-center space-y-2">
+              <h2 className="text-3xl font-bold">Your Impact Dashboard</h2>
+              <p className="text-muted-foreground">
+                See how your everyday purchases are making a difference in the world
+              </p>
             </div>
 
-            {/* Right Column */}
-            <div className="space-y-8">
-              <GoalsProgress />
-              <CharitySuggestions />
+            <section>
+              <ImpactOverview />
+            </section>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-8">
+                <RecentActivity />
+                <CharityUpdates />
+              </div>
+
+              <div className="space-y-8">
+                <GoalsProgress />
+                <CharitySuggestions />
+              </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }
