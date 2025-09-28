@@ -1,13 +1,10 @@
-import { useState } from "react";
+// src/App.jsx
 import { Routes, Route } from "react-router-dom";
 import Login from "./Login.jsx";
-import Dashboard from "./Dashboard";
-
+import Dashboard from "./Dashboard.jsx";
 import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0);
-
+export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
@@ -15,5 +12,3 @@ function App() {
     </Routes>
   );
 }
-
-export default App;
