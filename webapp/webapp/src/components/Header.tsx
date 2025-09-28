@@ -18,9 +18,11 @@ interface HeaderProps {
   onMenuClick?: (action: MenuAction) => void;
   /** Current collapse state of the desktop sidebar (for icon swap + a11y text) */
   isCollapsed?: boolean;
+  /** Called when an organization is selected from search */
+  onSelectOrganization?: (organization: any) => void;
 }
 
-export function Header({ onMenuClick, isCollapsed = false }: HeaderProps) {
+export function Header({ onMenuClick, isCollapsed = false, onSelectOrganization }: HeaderProps) {
   return (
     <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 py-4">
@@ -54,7 +56,6 @@ export function Header({ onMenuClick, isCollapsed = false }: HeaderProps) {
               <p className="text-sm text-muted-foreground">Making change with spare change</p>
             </div>
           </div>
-
           {/* Right cluster: month badge + actions */}
           <div className="flex items-center gap-4">
             <Badge variant="secondary" className="px-3 py-1">
