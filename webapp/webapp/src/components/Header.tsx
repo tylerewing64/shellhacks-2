@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import NavbarSearch from "./NavbarSearch";
+import DonationModal from "./DonationModal";
 import {
   Bell,
   Settings as SettingsIcon,
@@ -10,6 +11,7 @@ import {
   Menu,
   PanelLeftOpen,
   PanelLeftClose,
+  CreditCard,
 } from "lucide-react";
 
 type MenuAction = "mobile" | "toggle";
@@ -21,10 +23,22 @@ interface HeaderProps {
   isCollapsed?: boolean;
   /** Called when an organization is selected from search */
   onSelectOrganization?: (organization: any) => void;
+  /** Called when a donation is successfully made */
+  onDonationSuccess?: (donation: any) => void;
 }
 
-export function Header({ onMenuClick, isCollapsed = false, onSelectOrganization }: HeaderProps) {
+export function Header({ onMenuClick, isCollapsed = false, onSelectOrganization, onDonationSuccess }: HeaderProps) {
+  const [showDonationModal, setShowDonationModal] = useState(false);
+
+  const handleDonationSuccess = (donation) => {
+    if (onDonationSuccess) {
+      onDonationSuccess(donation);
+    }
+    setShowDonationModal(false);
+  };
+
   return (
+    <>
     <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
@@ -56,6 +70,10 @@ export function Header({ onMenuClick, isCollapsed = false, onSelectOrganization 
               <h1 className="text-xl font-semibold">CharityRound</h1>
               <p className="text-sm text-muted-foreground">Making change with spare change</p>
             </div>
+            {/* Center: Search Bar */}
+            <div className="flex-1 max-w-md mx-8">
+              <NavbarSearch onSelectOrganization={onSelectOrganization} onDonationSuccess={onDonationSuccess} />
+            </div>
           </div>
 
           {/* Right cluster: month badge + actions */}
@@ -63,6 +81,14 @@ export function Header({ onMenuClick, isCollapsed = false, onSelectOrganization 
             <Badge variant="secondary" className="px-3 py-1">
               $23.45 this month
             </Badge>
+            <Button 
+              onClick={() => setShowDonationModal(true)}
+              className=" centerbg-green-600 hover:bg-green-700 text-white"
+              size="sm"
+            >
+              <CreditCard className="h-4 w-4 mr-2" />
+              Donate Now
+            </Button>
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" aria-label="Notifications">
                 <Bell className="h-4 w-4" />
@@ -78,5 +104,19 @@ export function Header({ onMenuClick, isCollapsed = false, onSelectOrganization 
         </div>
       </div>
     </header>
+
+    {/* Donation Modal - Outside header for proper positioning */}
+    {showDonationModal && (
+      <DonationModal
+        organization={{
+          ein: "general",
+          name: "General Donation",
+          description: "Make a general donation to support our platform"
+        }}
+        onDonationSuccess={handleDonationSuccess}
+        onClose={() => setShowDonationModal(false)}
+      />
+    )}
+    </>
   );
 }

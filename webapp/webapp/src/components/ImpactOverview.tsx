@@ -1,25 +1,124 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import DashboardService from '../services/dashboardService';
 
-const impactData = [
-  { name: 'Education', value: 45, color: '#8b5cf6' },
-  { name: 'Food Security', value: 30, color: '#06b6d4' },
-  { name: 'Healthcare', value: 15, color: '#10b981' },
-  { name: 'Environment', value: 10, color: '#f59e0b' },
-];
+const categoryColors = {
+  'community': '#4F46E5',
+  'education': '#059669', 
+  'healthcare': '#DC2626',
+  'environment': '#7C3AED',
+  'animals': '#F59E0B',
+  'other': '#6B7280'
+};
 
-const monthlyDonations = [
-  { month: 'January 2024', donations: '$18.67', transactions: 28 },
-  { month: 'February 2024', donations: '$22.34', transactions: 35 },
-  { month: 'March 2024', donations: '$31.45', transactions: 42 },
-  { month: 'April 2024', donations: '$28.12', transactions: 38 },
-  { month: 'May 2024', donations: '$35.78', transactions: 47 },
-  { month: 'June 2024', donations: '$23.45', transactions: 43 },
-];
+interface ImpactData {
+  balance: {
+    current_balance: string; // API returns strings
+    total_accumulated: string; // API returns strings
+    total_donated: string; // API returns strings
+  };
+  monthlyStats: Array<{
+    month: string;
+    donation_count: number;
+    total_donated: string; // API returns strings
+  }>;
+  topOrganizations: Array<{
+    name: string;
+    logo_url: string;
+    category: string;
+    total_donated: string; // API returns strings
+    donation_count: number;
+  }>;
+  impactMetrics: Array<{
+    organization_name: string;
+    metric_name: string;
+    metric_value: number;
+    unit: string;
+    description: string;
+  }>;
+}
 
 export function ImpactOverview() {
+  const [data, setData] = useState<ImpactData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const impactData = await DashboardService.getImpactOverview();
+      setData(impactData);
+    } catch (err) {
+      setError('Failed to load impact data');
+      console.error('Error loading impact data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="flex flex-col gap-4">
+          <CardHeader>
+            <CardTitle>Key Metrics</CardTitle>
+          </CardHeader>
+          <CardContent className="p-2 space-y-4">
+            <div className="p-2 border border-border/50 rounded-lg text-center">
+              <div className="text-sm text-muted-foreground">Loading...</div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="flex flex-col gap-4">
+          <CardHeader>
+            <CardTitle>Key Metrics</CardTitle>
+          </CardHeader>
+          <CardContent className="p-2 space-y-4">
+            <div className="p-2 border border-border/50 rounded-lg text-center">
+              <div className="text-sm text-red-500">Error loading data</div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Transform data for charts - convert strings to numbers
+  const balance = {
+    current_balance: parseFloat(data.balance.current_balance) || 0,
+    total_accumulated: parseFloat(data.balance.total_accumulated) || 0,
+    total_donated: parseFloat(data.balance.total_donated) || 0
+  };
+
+  const impactData = data.topOrganizations.map(org => ({
+    name: org.name,
+    value: Math.round((parseFloat(org.total_donated) / balance.total_donated) * 100),
+    color: categoryColors[org.category] || categoryColors.other
+  }));
+
+  const monthlyDonations = data.monthlyStats.map(stat => ({
+    month: new Date(stat.month + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+    donations: `$${parseFloat(stat.total_donated).toFixed(2)}`,
+    transactions: stat.donation_count
+  }));
+
+  const currentMonth = data.monthlyStats[0];
+  const previousMonth = data.monthlyStats[1];
+  const monthlyChange = previousMonth ? 
+    parseFloat(currentMonth.total_donated) - parseFloat(previousMonth.total_donated) : 0;
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
@@ -32,15 +131,26 @@ export function ImpactOverview() {
           {/* Total Donated */}
           <div className="p-2 border border-border/50 rounded-lg text-center">
             <div className="text-sm text-muted-foreground">Total Donated</div>
-            <div className="text-xl font-bold">$247.82</div>
-            <p className="text-xs text-muted-foreground">+$23.45 this month</p>
+            <div className="text-xl font-bold">${balance.total_donated.toFixed(2)}</div>
+            <p className={`text-xs ${monthlyChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {monthlyChange >= 0 ? '+' : ''}${monthlyChange.toFixed(2)} this month
+            </p>
+          </div>
+
+          {/* Current Balance */}
+          <div className="p-2 border border-border/50 rounded-lg text-center">
+            <div className="text-sm text-muted-foreground">Current Balance</div>
+            <div className="text-xl font-bold">${balance.current_balance.toFixed(2)}</div>
+            <p className="text-xs text-muted-foreground">Ready to donate</p>
           </div>
 
           {/* Round-ups This Month */}
           <div className="p-2 border border-border/50 rounded-lg text-center">
             <div className="text-sm text-muted-foreground">Round-ups This Month</div>
-            <div className="text-xl font-bold">43</div>
-            <p className="text-xs text-muted-foreground">Avg: $0.54 per transaction</p>
+            <div className="text-xl font-bold">{currentMonth?.donation_count || 0}</div>
+            <p className="text-xs text-muted-foreground">
+              Avg: ${currentMonth ? (parseFloat(currentMonth.total_donated) / currentMonth.donation_count).toFixed(2) : '0.00'} per donation
+            </p>
           </div>
         </CardContent>
       </Card>

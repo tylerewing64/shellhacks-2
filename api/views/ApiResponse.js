@@ -1,10 +1,16 @@
 class ApiResponse {
-  static success(res, data, statusCode = 200) {
-    return res.status(statusCode).json({
+  static success(res, data, message = null, statusCode = 200) {
+    const response = {
       success: true,
       ...data,
       timestamp: new Date().toISOString()
-    });
+    };
+    
+    if (message) {
+      response.message = message;
+    }
+    
+    return res.status(statusCode).json(response);
   }
 
   static error(res, message, statusCode = 500, error = null) {
