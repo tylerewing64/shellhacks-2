@@ -8,17 +8,24 @@
     "dev": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["charity", "donation", "roundup", "fintech", "api"],
+  "keywords": [
+    "charity",
+    "donation",
+    "roundup",
+    "fintech",
+    "api"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
-    "mysql2": "^3.6.5",
     "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
     "cors": "^2.8.5",
-    "plaid": "^21.0.0",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.6.5",
+    "node-fetch": "^2.7.0",
+    "plaid": "^21.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
