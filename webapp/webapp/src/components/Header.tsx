@@ -58,11 +58,6 @@ export function Header({ onMenuClick, isCollapsed = false, onSelectOrganization 
             </div>
           </div>
 
-          {/* Center: Search Bar */}
-          <div className="flex-1 max-w-md mx-8">
-            <NavbarSearch onSelectOrganization={onSelectOrganization} />
-          </div>
-
           {/* Right cluster: month badge + actions */}
           <div className="flex items-center gap-4">
             <Badge variant="secondary" className="px-3 py-1">

@@ -39,10 +39,8 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-500 shadow-lg">
-          <svg viewBox="0 0 24 24" className="h-7 w-7 text-white" fill="currentColor">
-            <rect x="6.5" y="6.5" width="11" height="11" rx="2" />
-          </svg>
+        <div className="mx-auto mb-6 flex items-center justify-center">
+          <img src="/logo.png" alt="Logo" className="h-20 w-20 object-contain" />
         </div>
 
         {/* Headline */}
@@ -55,7 +53,9 @@ export default function Login() {
         <div className="rounded-2xl bg-white p-6 shadow-xl ring-1 ring-black/5">
           <div className="mb-5">
             <h2 className="text-lg font-semibold text-gray-800">Login</h2>
-            <p className="text-sm text-gray-500">Enter your credentials to continue</p>
+            <p className="text-sm text-gray-500">
+              Enter your credentials to continue
+            </p>
           </div>
 
           {error && (
@@ -67,10 +67,16 @@ export default function Login() {
           <form className="space-y-4" onSubmit={handleLogin}>
             {/* Email */}
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-gray-700">Email</span>
+              <span className="mb-1 block text-sm font-medium text-gray-700">
+                Email
+              </span>
               <div className="relative">
                 <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
-                  <svg className="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                  <svg
+                    className="h-5 w-5 text-gray-400"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
                     <path d="M2 6.5A2.5 2.5 0 0 1 4.5 4h15A2.5 2.5 0 0 1 22 6.5v11A2.5 2.5 0 0 1 19.5 20h-15A2.5 2.5 0 0 1 2 17.5v-11Zm2.2.3 7.51 5.01a1 1 0 0 0 1.08 0L20.3 6.8a.75.75 0 1 0-.86-1.23L12 10.3 3.56 5.57a.75.75 0 1 0-.86 1.23Z" />
                   </svg>
                 </span>
@@ -86,10 +92,16 @@ export default function Login() {
 
             {/* Password */}
             <label className="block">
-              <span className="mb-1 block text-sm font-medium text-gray-700">Password</span>
+              <span className="mb-1 block text-sm font-medium text-gray-700">
+                Password
+              </span>
               <div className="relative">
                 <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
-                  <svg className="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                  <svg
+                    className="h-5 w-5 text-gray-400"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
                     <path d="M17 11V8a5 5 0 1 0-10 0v3H5.5A1.5 1.5 0 0 0 4 12.5v7A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 18.5 11H17Zm-8-3a3 3 0 1 1 6 0v3H9V8Z" />
                   </svg>
                 </span>
@@ -120,7 +132,10 @@ export default function Login() {
                 />
                 Remember me
               </label>
-              <a className="text-sm font-medium text-indigo-600 hover:text-indigo-700" href="#">
+              <a
+                className="text-sm font-medium text-indigo-600 hover:text-indigo-700"
+                href="#"
+              >
                 Forgot password?
               </a>
             </div>
