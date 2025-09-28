@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import NavbarSearch from "./NavbarSearch";
 import {
   Bell,
   Settings as SettingsIcon,
@@ -56,6 +57,7 @@ export function Header({ onMenuClick, isCollapsed = false, onSelectOrganization 
               <p className="text-sm text-muted-foreground">Making change with spare change</p>
             </div>
           </div>
+
           {/* Right cluster: month badge + actions */}
           <div className="flex items-center gap-4">
             <Badge variant="secondary" className="px-3 py-1">

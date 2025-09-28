@@ -9,11 +9,26 @@ export default function Dashboard() {
   // Sidebar state
   const [collapsed, setCollapsed] = useState(false); // desktop collapse
   const [mobileOpen, setMobileOpen] = useState(false); // mobile drawer
+  const [selectedOrganizations, setSelectedOrganizations] = useState([]);
 
   // Header menu handler
   function handleMenuClick(action) {
     if (action === "toggle") setCollapsed((s) => !s);
     if (action === "mobile") setMobileOpen(true);
+  }
+
+  // Handle organization selection from search
+  function handleSelectOrganization(organization) {
+    // Check if organization is already selected
+    const isAlreadySelected = selectedOrganizations.some(
+      org => org.ein === organization.ein
+    );
+
+    if (!isAlreadySelected) {
+      setSelectedOrganizations(prev => [...prev, organization]);
+      // You could show a toast notification here
+      console.log('Organization added:', organization.name);
+    }
   }
 
   return (
@@ -30,18 +45,13 @@ export default function Dashboard() {
 
       {/* RIGHT: Content */}
       <div className="flex-1 min-h-screen">
+
         <Header onMenuClick={handleMenuClick} isCollapsed={collapsed} />
+
 
         <main className="container mx-auto px-4 py-8 space-y-8">
           {/* Impact Overview Section */}
           <ImpactOverview />
-
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column */}
-            <div className="lg:col-span-2 space-y-8">
-              <RecentActivity />
-          </div>
           </div>
         </main>
       </div>
